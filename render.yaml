@@ -5,13 +5,15 @@ services:
     rootDir: backend
     buildCommand: npm install
     startCommand: node server.js
+    plan: free
+    healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://neondb_owner:npg_MeKFsZtXk42d@ep-broad-meadow-atfwrzki-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require
       - key: JWT_SECRET
-        generateValue: true
+        value: hrconnect_jwt_secret_2024_production_key
       - key: JWT_REFRESH_SECRET
-        generateValue: true
+        value: hrconnect_refresh_secret_2024_production_key
       - key: JWT_EXPIRE
         value: 3600
       - key: JWT_REFRESH_EXPIRE
@@ -22,7 +24,7 @@ services:
         value: https://hrconnect.onrender.com
 
   - type: static
-    name: hrconnect-frontend
+    name: hrconnect
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
