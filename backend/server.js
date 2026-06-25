@@ -9,6 +9,9 @@ const { sequelize } = require('./models');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy (required for rate-limiter behind Render's reverse proxy)
+app.set('trust proxy', 1);
+
 // Health check FIRST
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
