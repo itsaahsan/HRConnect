@@ -53,18 +53,37 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
 });
 
+// DB readiness flag
+let dbReady = false;
+
+app.get('/api/ready', (req, res) => {
+  if (dbReady) return res.status(200).json({ ready: true });
+  res.status(503).json({ ready: false, message: 'Database not ready' });
+});
+
 // Start
 const startServer = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Database connected');
-    await sequelize.sync({ alter: true });
-    console.log('Models synced');
-    app.listen(PORT, '0.0.0.0', () => console.log(`Server on port ${PORT}`));
-  } catch (error) {
-    console.error('Failed to start:', error);
-    process.exit(1);
-  }
+  const server = app.listen(PORT, '0.0.0.0', () => console.log(`Server on port ${PORT}`));
+
+  const connectDB = async (retries = 10, delay = 5000) => {
+    for (let i = 1; i <= retries; i++) {
+      try {
+        await sequelize.authenticate();
+        console.log('Database connected');
+        await sequelize.sync({ alter: true });
+        console.log('Models synced');
+        dbReady = true;
+        return;
+      } catch (error) {
+        console.error(`Database connection attempt ${i}/${retries} failed:`, error.message);
+        if (i < retries) await new Promise(r => setTimeout(r, delay));
+      }
+    }
+    console.error('Could not connect to database after all retries. Exiting.');
+    server.close(() => process.exit(1));
+  };
+
+  connectDB();
 };
 
 startServer();
