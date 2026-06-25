@@ -15,8 +15,20 @@ app.use(helmet({
 }));
 
 // CORS
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'https://hrconnect.onrender.com'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true);
+    }
+  },
   credentials: true
 }));
 
@@ -44,6 +56,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Root health check
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'hrconnect-backend' });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -69,8 +86,10 @@ const startServer = async () => {
     await sequelize.sync({ alter: true });
     console.log('Database models synchronized');
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
+      console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+      console.log(`DATABASE_URL set: ${!!process.env.DATABASE_URL}`);
     });
   } catch (error) {
     console.error('Unable to start server:', error);

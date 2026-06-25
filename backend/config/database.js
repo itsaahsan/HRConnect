@@ -3,7 +3,9 @@ require('dotenv').config();
 
 let dbUrl = process.env.DATABASE_URL;
 if (dbUrl) {
-  dbUrl = dbUrl.replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
+  dbUrl = dbUrl.replace(/[?&]sslmode=[^&]*/g, '');
+  dbUrl = dbUrl.replace(/[?&]channel_binding=[^&]*/g, '');
+  dbUrl = dbUrl.replace(/\?$/, '');
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
