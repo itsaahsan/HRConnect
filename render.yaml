@@ -6,7 +6,6 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     plan: free
-    healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
         value: postgresql://neondb_owner:npg_MeKFsZtXk42d@ep-broad-meadow-atfwrzki-pooler.c-9.us-east-1.aws.neon.tech/neondb
