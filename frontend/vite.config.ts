@@ -6,6 +6,17 @@ export default defineConfig({
   server: {
     port: 5173
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'recharts': ['recharts'],
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+        }
+      }
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom',
