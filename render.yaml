@@ -25,8 +25,12 @@ services:
   - type: static
     name: hrconnect
     rootDir: frontend
-    buildCommand: npm install && npm run build && cp dist/index.html dist/404.html
+    buildCommand: npm install && npm run build
     staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /**
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         sync: false
