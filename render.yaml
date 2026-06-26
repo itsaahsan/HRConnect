@@ -22,13 +22,11 @@ services:
       - key: FRONTEND_URL
         value: https://hrconnect-yte3.onrender.com
 
-  - type: web
+  - type: static
     name: hrconnect
-    runtime: node
     rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: node server.js
-    plan: free
+    buildCommand: npm install && npm run build && cp dist/index.html dist/404.html
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://hrconnect-backend-3xx2.onrender.com/api
