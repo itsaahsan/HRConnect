@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://hrconnect-backend-3xx2.onrender.com/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -30,7 +30,7 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
           const response = await axios.post(
-            `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh-token`,
+            `${import.meta.env.VITE_API_URL || 'https://hrconnect-backend-3xx2.onrender.com/api'}/auth/refresh-token`,
             { refreshToken }
           );
 
