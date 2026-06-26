@@ -18,9 +18,16 @@ const PORT = process.env.PORT || 5000;
 // Trust proxy (required for rate-limiter behind Render's reverse proxy)
 app.set('trust proxy', 1);
 
-// Health check
+// Health check FIRST
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
+});
+
+// DB readiness
+let dbReady = false;
+app.get('/api/ready', (req, res) => {
+  if (dbReady) return res.status(200).json({ ready: true });
+  res.status(503).json({ ready: false, message: 'Database not ready' });
 });
 
 // Security
@@ -49,19 +56,6 @@ app.use(express.urlencoded({ extended: true }));
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const frontendBuild = path.join(__dirname, 'public');
-if (fs.existsSync(frontendBuild)) {
-  app.use(express.static(frontendBuild));
-}
-
-// DB readiness flag
-let dbReady = false;
-
-app.get('/api/ready', (req, res) => {
-  if (dbReady) return res.status(200).json({ ready: true });
-  res.status(503).json({ ready: false, message: 'Database not ready' });
-});
-
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/employees', require('./routes/employees'));
@@ -74,7 +68,7 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/holidays', require('./routes/holidays'));
 app.use('/api/activity-logs', require('./routes/activityLogs'));
 
-// Error handler (must be before SPA fallback)
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   if (err.name === 'MulterError') {
@@ -87,16 +81,6 @@ app.use((err, req, res, next) => {
       ? 'Internal server error'
       : err.message || 'Internal server error'
   });
-});
-
-// SPA fallback - serve index.html for any non-API route (must be LAST)
-app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, 'public', 'index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).json({ message: 'Not found' });
-  }
 });
 
 // Start
