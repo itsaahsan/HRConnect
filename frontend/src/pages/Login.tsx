@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, Shield, Users, BarChart3 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, Shield, Users, BarChart3, LogIn, Play } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { loginSchema } from '../utils/validators';
 import toast from 'react-hot-toast';
@@ -160,31 +160,44 @@ const Login: React.FC = () => {
             <p className="text-[10px] font-bold text-blue-400/60 uppercase tracking-widest mb-3">Demo Credentials</p>
             <div className="space-y-1.5">
               {[
-                { role: 'Admin', email: 'admin@hrconnect.com', pass: 'Admin1234' },
-                { role: 'Manager', email: 'manager@hrconnect.com', pass: 'Manager1234' },
-                { role: 'Employee', email: 'employee@hrconnect.com', pass: 'Employee1234' }
+                { role: 'Admin', email: 'admin@hrconnect.com', pass: 'Admin1234', color: '#EF4444' },
+                { role: 'Manager', email: 'manager@hrconnect.com', pass: 'Manager1234', color: '#F59E0B' },
+                { role: 'Employee', email: 'employee@hrconnect.com', pass: 'Employee1234', color: '#10B981' }
               ].map(c => {
                 const isDemoLoading = demoLoading === c.role;
                 return (
                   <div key={c.role}
                     onClick={() => handleDemoLogin(c.role, c.email, c.pass)}
-                    className={`flex items-center gap-3 p-2 rounded-lg transition-colors cursor-pointer ${isDemoLoading ? 'bg-blue-500/10' : 'hover:bg-white/5'}`}>
-                    <div className="w-6 h-6 rounded flex items-center justify-center text-[9px] font-bold" style={{
-                      background: isDemoLoading ? 'rgba(59,130,246,0.3)' : 'rgba(59,130,246,0.1)',
-                      color: isDemoLoading ? '#93C5FD' : '#60A5FA'
+                    className={`flex items-center gap-3 p-2.5 rounded-lg transition-all cursor-pointer group ${isDemoLoading ? 'bg-blue-500/10' : 'hover:bg-white/5'}`}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold transition-all" style={{
+                      background: isDemoLoading ? 'rgba(59,130,246,0.3)' : `${c.color}15`,
+                      color: isDemoLoading ? '#93C5FD' : c.color
                     }}>
-                      {isDemoLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : c.role[0]}
+                      {isDemoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : c.role[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-mono truncate ${isDemoLoading ? 'text-blue-400' : 'text-slate-400'}`}>
+                      <p className="text-xs font-semibold" style={{ color: c.color }}>{c.role}</p>
+                      <p className={`text-[11px] font-mono truncate ${isDemoLoading ? 'text-blue-400' : 'text-slate-500'}`}>
                         {isDemoLoading ? 'Logging in...' : c.email}
                       </p>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-600">{c.pass}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-slate-600 hidden sm:block">{c.pass}</span>
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center transition-all opacity-60 group-hover:opacity-100 group-hover:scale-110" style={{
+                        background: isDemoLoading ? 'rgba(59,130,246,0.2)' : 'rgba(59,130,246,0.1)'
+                      }}>
+                        {isDemoLoading ? (
+                          <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
+                        ) : (
+                          <LogIn className="w-3.5 h-3.5 text-blue-400" />
+                        )}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
+            <p className="text-[10px] text-slate-600 mt-3 text-center">Click any account to auto-login</p>
           </div>
         </div>
       </div>
