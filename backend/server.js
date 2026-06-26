@@ -10,7 +10,7 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-const { sequelize } = require('./models');
+const { sequelize, User, Employee, Department } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -44,7 +44,7 @@ const allowedOrigins = process.env.FRONTEND_URL
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -87,6 +87,54 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Seed demo users if database is empty
+const seedDemoUsers = async () => {
+  try {
+    const userCount = await User.count();
+    if (userCount > 0) return;
+
+    console.log('No users found — seeding demo data...');
+    const bcrypt = require('bcryptjs');
+
+    const hashedAdmin = await bcrypt.hash('Admin1234', 12);
+    const hashedManager = await bcrypt.hash('Manager1234', 12);
+    const hashedEmployee = await bcrypt.hash('Employee1234', 12);
+
+    const users = await User.bulkCreate([
+      { email: 'admin@hrconnect.com', password: hashedAdmin, role: 'admin', is_active: true },
+      { email: 'manager@hrconnect.com', password: hashedManager, role: 'manager', is_active: true },
+      { email: 'employee@hrconnect.com', password: hashedEmployee, role: 'employee', is_active: true }
+    ]);
+
+    const departments = await Department.bulkCreate([
+      { name: 'Engineering', code: 'ENG', description: 'Software development', budget: 500000 },
+      { name: 'Human Resources', code: 'HR', description: 'People management', budget: 200000 }
+    ]);
+
+    await Employee.bulkCreate([
+      {
+        user_id: users[0].id, employee_id: 'EMP001', first_name: 'Ahmad', last_name: 'Hassan',
+        email: 'admin@hrconnect.com', phone: '+8801712345678', department_id: departments[1].id,
+        position: 'HR Director', salary: 85000, join_date: '2020-01-15', status: 'active'
+      },
+      {
+        user_id: users[1].id, employee_id: 'EMP002', first_name: 'Karim', last_name: 'Ahmed',
+        email: 'manager@hrconnect.com', phone: '+8801712345679', department_id: departments[0].id,
+        position: 'Engineering Manager', salary: 75000, join_date: '2020-03-20', status: 'active'
+      },
+      {
+        user_id: users[2].id, employee_id: 'EMP003', first_name: 'Rafiq', last_name: 'Uddin',
+        email: 'employee@hrconnect.com', phone: '+8801712345681', department_id: departments[0].id,
+        position: 'Senior Developer', salary: 55000, join_date: '2021-06-15', status: 'active'
+      }
+    ]);
+
+    console.log('Demo users seeded successfully');
+  } catch (error) {
+    console.error('Seed error:', error.message);
+  }
+};
+
 // Start
 const startServer = async () => {
   const server = app.listen(PORT, '0.0.0.0', () => console.log(`Server on port ${PORT}`));
@@ -96,10 +144,9 @@ const startServer = async () => {
       try {
         await sequelize.authenticate();
         console.log('Database connected');
-        if (process.env.NODE_ENV !== 'production') {
-          await sequelize.sync({ alter: true });
-          console.log('Models synced');
-        }
+        await sequelize.sync({ alter: true });
+        console.log('Models synced');
+        await seedDemoUsers();
         dbReady = true;
         return;
       } catch (error) {
