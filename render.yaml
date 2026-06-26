@@ -3,7 +3,7 @@ services:
     name: hrconnect-backend
     runtime: node
     rootDir: backend
-    buildCommand: npm install
+    buildCommand: npm install && cd ../frontend && npm install && VITE_API_URL=https://hrconnect-backend-3xx2.onrender.com/api npm run build && cp -r dist ../backend/public
     startCommand: node server.js
     plan: free
     envVars:
@@ -20,13 +20,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: https://hrconnect-yte3.onrender.com
-
-  - type: static
-    name: hrconnect
-    rootDir: frontend
-    buildCommand: npm install && npm run build && cp dist/index.html dist/404.html
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://hrconnect-backend-3xx2.onrender.com/api
+        sync: false

@@ -53,6 +53,11 @@ app.use(express.urlencoded({ extended: true }));
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+const frontendBuild = path.join(__dirname, 'public');
+if (fs.existsSync(frontendBuild)) {
+  app.use(express.static(frontendBuild));
+}
+
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/employees', require('./routes/employees'));
@@ -64,6 +69,16 @@ app.use('/api/reports', require('./routes/reports'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/holidays', require('./routes/holidays'));
 app.use('/api/activity-logs', require('./routes/activityLogs'));
+
+// SPA fallback - serve index.html for any non-API route
+app.get('*', (req, res) => {
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({ message: 'Not found' });
+  }
+});
 
 // Error handler
 app.use((err, req, res, next) => {
