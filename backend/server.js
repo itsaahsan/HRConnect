@@ -18,6 +18,10 @@ const PORT = process.env.PORT || 5000;
 // Trust proxy (required for rate-limiter behind Render's reverse proxy)
 app.set('trust proxy', 1);
 
+app.get('/', (req, res) => {
+  res.send('HRConnect Backend is running!');
+});
+
 // Health check FIRST
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
