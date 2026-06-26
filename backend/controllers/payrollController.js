@@ -30,7 +30,13 @@ exports.generatePayroll = async (req, res) => {
 
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
-    const workingDays = endDate.getDate();
+    let workingDays = 0;
+    const d = new Date(startDate);
+    while (d <= endDate) {
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) workingDays++;
+      d.setDate(d.getDate() + 1);
+    }
 
     const payrollRecords = [];
 
@@ -180,6 +186,10 @@ exports.updatePayroll = async (req, res) => {
       return res.status(404).json({ message: 'Payroll record not found' });
     }
 
+    if (payroll.status === 'paid') {
+      return res.status(400).json({ message: 'Cannot edit paid payroll records' });
+    }
+
     const { basic_salary, allowances, deductions, overtime_pay } = req.body;
 
     const updateData = {};
@@ -215,7 +225,7 @@ exports.markAsPaid = async (req, res) => {
 
     await Payroll.update(
       { status: 'paid', payment_date: new Date() },
-      { where: { id: { [Op.in]: ids } } }
+      { where: { id: { [Op.in]: ids }, status: 'processed' } }
     );
 
     res.json({ message: `${ids.length} payroll record(s) marked as paid` });

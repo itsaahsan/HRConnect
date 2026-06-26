@@ -1,3 +1,13 @@
+const escapeHtml = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
 const generatePayslip = (employee, payroll) => {
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -37,12 +47,12 @@ const generatePayslip = (employee, payroll) => {
       <div class="employee-info">
         <h3>Employee Information</h3>
         <div class="info-grid">
-          <div><strong>Employee ID:</strong> ${employee.employee_id}</div>
-          <div><strong>Name:</strong> ${employee.first_name} ${employee.last_name}</div>
-          <div><strong>Department:</strong> ${employee.department ? employee.department.name : 'N/A'}</div>
-          <div><strong>Position:</strong> ${employee.position || 'N/A'}</div>
-          <div><strong>Email:</strong> ${employee.email}</div>
-          <div><strong>Join Date:</strong> ${employee.join_date}</div>
+          <div><strong>Employee ID:</strong> ${escapeHtml(employee.employee_id)}</div>
+          <div><strong>Name:</strong> ${escapeHtml(employee.first_name)} ${escapeHtml(employee.last_name)}</div>
+          <div><strong>Department:</strong> ${escapeHtml(employee.department ? employee.department.name : 'N/A')}</div>
+          <div><strong>Position:</strong> ${escapeHtml(employee.position || 'N/A')}</div>
+          <div><strong>Email:</strong> ${escapeHtml(employee.email)}</div>
+          <div><strong>Join Date:</strong> ${escapeHtml(employee.join_date)}</div>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings as SettingsIcon, Moon, Sun, Bell, Shield, Database, Globe } from 'lucide-react';
+import { Settings as SettingsIcon, Moon, Sun, Shield, Database, Globe } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 

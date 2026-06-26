@@ -31,7 +31,13 @@ exports.updateHoliday = async (req, res) => {
   try {
     const holiday = await Holiday.findByPk(req.params.id);
     if (!holiday) return res.status(404).json({ message: 'Holiday not found' });
-    await holiday.update(req.body);
+    const { name, date, type, description } = req.body;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (date !== undefined) updateData.date = date;
+    if (type !== undefined) updateData.type = type;
+    if (description !== undefined) updateData.description = description;
+    await holiday.update(updateData);
     res.json({ message: 'Holiday updated', holiday });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

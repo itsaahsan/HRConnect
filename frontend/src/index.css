@@ -104,6 +104,11 @@ body {
     color: #94A3B8;
   }
 
+  .text-success { color: #10B981; }
+  .text-warning { color: #F59E0B; }
+  .bg-success { background: #10B981; }
+  .text-white-hover:hover { color: white; }
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }

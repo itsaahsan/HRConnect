@@ -2,7 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
+
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const { sequelize } = require('./models');
 
@@ -25,7 +31,20 @@ app.get('/', (req, res) => {
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 // CORS
-app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(u => u.trim())
+  : [];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -53,7 +72,12 @@ app.use((err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') return res.status(400).json({ message: 'File too large' });
     return res.status(400).json({ message: err.message });
   }
-  res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.status(err.status || 500).json({
+    message: isProduction && (err.status || 500) >= 500
+      ? 'Internal server error'
+      : err.message || 'Internal server error'
+  });
 });
 
 // DB readiness flag
@@ -73,8 +97,10 @@ const startServer = async () => {
       try {
         await sequelize.authenticate();
         console.log('Database connected');
-        await sequelize.sync({ alter: true });
-        console.log('Models synced');
+        if (process.env.NODE_ENV !== 'production') {
+          await sequelize.sync({ alter: true });
+          console.log('Models synced');
+        }
         dbReady = true;
         return;
       } catch (error) {
@@ -89,4 +115,8 @@ const startServer = async () => {
   connectDB();
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;

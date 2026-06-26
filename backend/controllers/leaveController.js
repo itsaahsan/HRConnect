@@ -153,27 +153,6 @@ exports.cancelLeave = async (req, res) => {
 
     await leave.update({ status: 'cancelled' });
 
-    if (leave.type === 'Annual' || leave.type === 'Sick') {
-      const currentYear = new Date().getFullYear();
-      const leaveBalance = await LeaveBalance.findOne({
-        where: { employee_id: employee.id, year: currentYear }
-      });
-
-      if (leaveBalance) {
-        if (leave.type === 'Annual') {
-          await leaveBalance.update({
-            annual_used: leaveBalance.annual_used - leave.total_days,
-            annual_remaining: leaveBalance.annual_remaining + leave.total_days
-          });
-        } else if (leave.type === 'Sick') {
-          await leaveBalance.update({
-            sick_used: leaveBalance.sick_used - leave.total_days,
-            sick_remaining: leaveBalance.sick_remaining + leave.total_days
-          });
-        }
-      }
-    }
-
     res.json({ message: 'Leave cancelled successfully' });
   } catch (error) {
     console.error('Cancel leave error:', error);
@@ -275,11 +254,17 @@ exports.approveLeave = async (req, res) => {
 
     if (leaveBalance) {
       if (leave.type === 'Annual') {
+        if (leaveBalance.annual_remaining < leave.total_days) {
+          return res.status(400).json({ message: 'Insufficient annual leave balance to approve' });
+        }
         await leaveBalance.update({
           annual_used: leaveBalance.annual_used + leave.total_days,
           annual_remaining: leaveBalance.annual_remaining - leave.total_days
         });
       } else if (leave.type === 'Sick') {
+        if (leaveBalance.sick_remaining < leave.total_days) {
+          return res.status(400).json({ message: 'Insufficient sick leave balance to approve' });
+        }
         await leaveBalance.update({
           sick_used: leaveBalance.sick_used + leave.total_days,
           sick_remaining: leaveBalance.sick_remaining - leave.total_days

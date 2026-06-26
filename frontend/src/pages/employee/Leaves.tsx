@@ -82,7 +82,7 @@ const EmployeeLeaves: React.FC = () => {
             <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
                 className="h-full bg-white/10 rounded-full"
-                style={{ width: `${(leaveBalance.annual_used / leaveBalance.annual_total) * 100}%` }}
+                style={{ width: `${leaveBalance.annual_total > 0 ? (leaveBalance.annual_used / leaveBalance.annual_total) * 100 : 0}%` }}
               />
             </div>
             <p className="text-xs text-gray-400 mt-1">Used: {leaveBalance.annual_used}</p>
@@ -96,7 +96,7 @@ const EmployeeLeaves: React.FC = () => {
             <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
                 className="h-full bg-success rounded-full"
-                style={{ width: `${(leaveBalance.sick_used / leaveBalance.sick_total) * 100}%` }}
+                style={{ width: `${leaveBalance.sick_total > 0 ? (leaveBalance.sick_used / leaveBalance.sick_total) * 100 : 0}%` }}
               />
             </div>
             <p className="text-xs text-gray-400 mt-1">Used: {leaveBalance.sick_used}</p>

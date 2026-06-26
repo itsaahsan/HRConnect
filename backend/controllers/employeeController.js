@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
-const { Employee, User, Department, Attendance, Leave, Payroll } = require('../models');
+const { Employee, User, Department, Attendance, Leave, Payroll, LeaveBalance, ActivityLog, Notification } = require('../models');
 const { exportEmployees } = require('../utils/csvExport');
 const path = require('path');
 
@@ -233,6 +233,13 @@ exports.deleteEmployee = async (req, res) => {
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
+
+    await Attendance.destroy({ where: { employee_id: employee.id } });
+    await Leave.destroy({ where: { employee_id: employee.id } });
+    await Payroll.destroy({ where: { employee_id: employee.id } });
+    await LeaveBalance.destroy({ where: { employee_id: employee.id } });
+    await ActivityLog.destroy({ where: { user_id: employee.user_id } });
+    await Notification.destroy({ where: { user_id: employee.user_id } });
 
     if (employee.user_id) {
       await User.destroy({ where: { id: employee.user_id } });

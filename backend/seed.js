@@ -211,7 +211,7 @@ const seed = async () => {
           present_days: 25 - absentDays,
           absent_days: absentDays,
           status: m === 1 ? 'processed' : 'paid',
-          payment_date: m === 1 ? null : new Date(year, month, 5)
+          payment_date: m === 1 ? null : new Date(year, month - 1, 5)
         });
       }
     }

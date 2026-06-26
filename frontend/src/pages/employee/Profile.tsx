@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { User, Mail, Phone, MapPin, Briefcase, Lock, Loader2 } from 'lucide-react';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import Avatar from '../../components/common/Avatar';
 import { formatDate } from '../../utils/formatDate';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { passwordSchema } from '../../utils/validators';
 import toast from 'react-hot-toast';
 
 const EmployeeProfile: React.FC = () => {
@@ -16,7 +18,9 @@ const EmployeeProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
 
   const { register: profileRegister, handleSubmit: handleProfileSubmit, reset: resetProfile } = useForm();
-  const { register: passwordRegister, handleSubmit: handlePasswordSubmit, reset: resetPassword, formState: { errors: passwordErrors } } = useForm();
+  const { register: passwordRegister, handleSubmit: handlePasswordSubmit, reset: resetPassword, formState: { errors: passwordErrors } } = useForm({
+    resolver: zodResolver(passwordSchema)
+  });
 
   useEffect(() => {
     fetchProfile();
@@ -52,6 +56,10 @@ const EmployeeProfile: React.FC = () => {
   };
 
   const onPasswordSubmit = async (data: any) => {
+    if (data.newPassword !== data.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
     setSaving(true);
     try {
       await api.put('/auth/change-password', {

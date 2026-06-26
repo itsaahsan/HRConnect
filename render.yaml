@@ -8,11 +8,11 @@ services:
     plan: free
     envVars:
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_MeKFsZtXk42d@ep-broad-meadow-atfwrzki-pooler.c-9.us-east-1.aws.neon.tech/neondb
+        sync: false
       - key: JWT_SECRET
-        value: hrconnect_jwt_secret_2024_production_key
+        generateValue: true
       - key: JWT_REFRESH_SECRET
-        value: hrconnect_refresh_secret_2024_production_key
+        generateValue: true
       - key: JWT_EXPIRE
         value: 3600
       - key: JWT_REFRESH_EXPIRE
@@ -20,7 +20,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: https://hrconnect-yte3.onrender.com
+        sync: false
 
   - type: static
     name: hrconnect
@@ -29,4 +29,4 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://hrconnect-backend-3xx2.onrender.com/api
+        sync: false

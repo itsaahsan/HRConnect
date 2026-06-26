@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { employeeSchema } from '../../utils/validators';
 
 const EditEmployee: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ const EditEmployee: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(employeeSchema.omit({ password: true }))
+  });
 
   useEffect(() => {
     fetchEmployee();

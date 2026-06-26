@@ -29,7 +29,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { label: 'Departments', path: `${baseRoute}/departments`, icon: Building2, roles: ['admin'] },
     { label: 'Attendance', path: `${baseRoute}/attendance`, icon: Calendar, roles: ['admin', 'manager', 'employee'] },
     { label: 'Leaves', path: `${baseRoute}/leaves`, icon: ClipboardList, roles: ['admin', 'manager', 'employee'] },
-    { label: 'Payroll', path: `${baseRoute}/payroll`, icon: Wallet, roles: ['admin', 'employee'] }
+    { label: 'Payroll', path: `${baseRoute}/payroll`, icon: Wallet, roles: ['admin'] },
+    { label: 'Payslips', path: `${baseRoute}/payslips`, icon: Wallet, roles: ['employee'] }
   ];
 
   const systemItems = [

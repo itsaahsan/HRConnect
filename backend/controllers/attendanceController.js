@@ -91,6 +91,8 @@ exports.clockOut = async (req, res) => {
       overtime_hours: overtimeHours
     });
 
+    await attendance.reload();
+
     res.json({
       message: 'Clocked out successfully',
       attendance

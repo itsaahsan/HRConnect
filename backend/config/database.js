@@ -6,13 +6,16 @@ if (dbUrl) {
   dbUrl = dbUrl.replace(/[?&]sslmode=[^&]*/g, '');
   dbUrl = dbUrl.replace(/[?&]channel_binding=[^&]*/g, '');
   dbUrl = dbUrl.replace(/\?$/, '');
+  dbUrl = dbUrl.replace(/&&/g, '&');
+  dbUrl = dbUrl.replace(/&$/, '');
+  dbUrl = dbUrl.replace(/\?&/, '?');
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 const sequelize = new Sequelize(dbUrl, {
   dialect: 'postgres',
-  logging: isProduction ? false : console.log,
+  logging: false,
   pool: {
     max: 5,
     min: 0,

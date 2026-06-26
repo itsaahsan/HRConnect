@@ -16,7 +16,8 @@ export const employeeSchema = z.object({
   join_date: z.string().optional(),
   emergency_contact: z.string().optional(),
   address: z.string().optional(),
-  password: z.string().min(6, 'Password must be at least 6 characters').optional()
+  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
+  status: z.enum(['active', 'inactive', 'terminated']).optional()
 });
 
 export const leaveSchema = z.object({
