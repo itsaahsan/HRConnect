@@ -47,7 +47,7 @@ const AppRoutes: React.FC = () => {
       } replace /> : <Login />} />
 
       {/* Admin Routes */}
-      <Route path="/admin" element={
+      <Route path="/admin/*" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <AdminLayout />
         </ProtectedRoute>
@@ -68,7 +68,7 @@ const AppRoutes: React.FC = () => {
       </Route>
 
       {/* Manager Routes */}
-      <Route path="/manager" element={
+      <Route path="/manager/*" element={
         <ProtectedRoute allowedRoles={['manager']}>
           <ManagerLayout />
         </ProtectedRoute>
@@ -79,7 +79,7 @@ const AppRoutes: React.FC = () => {
       </Route>
 
       {/* Employee Routes */}
-      <Route path="/employee" element={
+      <Route path="/employee/*" element={
         <ProtectedRoute allowedRoles={['employee']}>
           <EmployeeLayout />
         </ProtectedRoute>

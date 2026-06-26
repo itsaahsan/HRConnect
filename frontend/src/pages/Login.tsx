@@ -15,18 +15,32 @@ const Login: React.FC = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit = async (data: { email: string; password: string }) => {
-    setLoading(true);
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
+
+  const performLogin = async (email: string, password: string) => {
     try {
-      await login(data.email, data.password);
+      await login(email, password);
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      toast.success('Welcome back!');
+      toast.success(`Logged in as ${user.role}`);
       if (user.role === 'admin') navigate('/admin/dashboard');
       else if (user.role === 'manager') navigate('/manager/dashboard');
       else navigate('/employee/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Login failed');
-    } finally { setLoading(false); }
+    }
+  };
+
+  const onSubmit = async (data: { email: string; password: string }) => {
+    setLoading(true);
+    await performLogin(data.email, data.password);
+    setLoading(false);
+  };
+
+  const handleDemoLogin = async (role: string, email: string, password: string) => {
+    if (demoLoading) return;
+    setDemoLoading(role);
+    await performLogin(email, password);
+    setDemoLoading(null);
   };
 
   return (
@@ -135,7 +149,7 @@ const Login: React.FC = () => {
               </button>
             </div>
 
-            <button type="submit" disabled={loading}
+            <button type="submit" disabled={loading || !!demoLoading}
               className="w-full btn-primary justify-center py-3 mt-2">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Sign In <ArrowRight className="w-4 h-4" /></>}
             </button>
@@ -149,17 +163,27 @@ const Login: React.FC = () => {
                 { role: 'Admin', email: 'admin@hrconnect.com', pass: 'Admin1234' },
                 { role: 'Manager', email: 'manager@hrconnect.com', pass: 'Manager1234' },
                 { role: 'Employee', email: 'employee@hrconnect.com', pass: 'Employee1234' }
-              ].map(c => (
-                <div key={c.role} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
-                  <div className="w-6 h-6 rounded flex items-center justify-center text-[9px] font-bold" style={{ background: 'rgba(59,130,246,0.1)', color: '#60A5FA' }}>
-                    {c.role[0]}
+              ].map(c => {
+                const isDemoLoading = demoLoading === c.role;
+                return (
+                  <div key={c.role}
+                    onClick={() => handleDemoLogin(c.role, c.email, c.pass)}
+                    className={`flex items-center gap-3 p-2 rounded-lg transition-colors cursor-pointer ${isDemoLoading ? 'bg-blue-500/10' : 'hover:bg-white/5'}`}>
+                    <div className="w-6 h-6 rounded flex items-center justify-center text-[9px] font-bold" style={{
+                      background: isDemoLoading ? 'rgba(59,130,246,0.3)' : 'rgba(59,130,246,0.1)',
+                      color: isDemoLoading ? '#93C5FD' : '#60A5FA'
+                    }}>
+                      {isDemoLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : c.role[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-mono truncate ${isDemoLoading ? 'text-blue-400' : 'text-slate-400'}`}>
+                        {isDemoLoading ? 'Logging in...' : c.email}
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-600">{c.pass}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-mono text-slate-400 truncate">{c.email}</p>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-600">{c.pass}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
