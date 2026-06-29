@@ -38,18 +38,8 @@ app.get('/api/ready', (req, res) => {
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 // CORS
-const allowedOrigins = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(',').map(u => u.trim())
-  : [];
-
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,
   credentials: true
 }));
 
@@ -62,7 +52,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve frontend build in production
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
-console.log('Frontend dist path:', frontendDist, 'exists:', fs.existsSync(frontendDist));
 app.use(express.static(frontendDist));
 
 // API Routes
