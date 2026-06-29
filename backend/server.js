@@ -35,7 +35,10 @@ app.get('/api/ready', (req, res) => {
 });
 
 // Security
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false
+}));
 
 // CORS
 app.use(cors({
