@@ -7,12 +7,12 @@ exports.getAttendanceReport = async (req, res) => {
   try {
     const { start_date, end_date, department_id } = req.query;
 
-    if (!start_date || !end_date) {
-      return res.status(400).json({ message: 'Start and end dates are required' });
-    }
+    const today = new Date();
+    const start = start_date || new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const end = end_date || new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
 
     const where = {
-      date: { [Op.between]: [start_date, end_date] }
+      date: { [Op.between]: [start, end] }
     };
 
     const employeeWhere = {};
@@ -69,8 +69,8 @@ exports.getAttendanceReport = async (req, res) => {
     res.json({
       summary,
       byEmployee: Object.values(byEmployee),
-      dateRange: { start_date, end_date }
-    });
+      dateRange: { start_date: start, end_date: end }
+    };
   } catch (error) {
     console.error('Attendance report error:', error);
     res.status(500).json({ message: 'Server error' });

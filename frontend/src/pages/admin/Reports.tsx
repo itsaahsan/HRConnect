@@ -9,18 +9,17 @@ import toast from 'react-hot-toast';
 const Reports: React.FC = () => {
   const [activeReport, setActiveReport] = useState('attendance');
   const [departments, setDepartments] = useState<any[]>([]);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchDepartments();
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    setStartDate(firstDay.toISOString().split('T')[0]);
-    setEndDate(today.toISOString().split('T')[0]);
   }, []);
 
   useEffect(() => {
@@ -37,6 +36,7 @@ const Reports: React.FC = () => {
   };
 
   const fetchReport = async () => {
+    if (!startDate || !endDate) return;
     setLoading(true);
     try {
       const params = new URLSearchParams({
