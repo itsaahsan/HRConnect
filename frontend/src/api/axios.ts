@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const apiBase = import.meta.env.VITE_API_URL;
-const API_BASE = (apiBase ? apiBase : '') + '/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://hrconnect-backend-3xx2.onrender.com') + '/api';
 
 const api = axios.create({
   baseURL: API_BASE,

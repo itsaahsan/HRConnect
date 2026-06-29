@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node seed.js",
-    "test": "jest --forceExit --detectOpenHandles --verbose"
+    "test": "jest --forceExit --detectOpenHandles --verbose",
+    "build": "cd ../frontend && npm install && npm run build"
   },
   "jest": {
     "testEnvironment": "node",
