@@ -8,8 +8,8 @@
     "dev": "nodemon server.js",
     "seed": "node seed.js",
     "test": "jest --forceExit --detectOpenHandles --verbose",
-    "build": "cd ../frontend && npm install && npm run build",
-    "postinstall": "cd ../frontend && npm install && npm run build"
+    "build": "cd ../frontend && npm install --include=dev && npm run build",
+    "postinstall": "cd ../frontend && npm install --include=dev && npm run build"
   },
   "jest": {
     "testEnvironment": "node",
