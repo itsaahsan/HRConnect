@@ -62,6 +62,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve frontend build in production
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+console.log('Frontend dist path:', frontendDist, 'exists:', fs.existsSync(frontendDist));
 app.use(express.static(frontendDist));
 
 // API Routes
