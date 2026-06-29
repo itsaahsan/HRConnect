@@ -70,7 +70,7 @@ exports.getAttendanceReport = async (req, res) => {
       summary,
       byEmployee: Object.values(byEmployee),
       dateRange: { start_date: start, end_date: end }
-    };
+    });
   } catch (error) {
     console.error('Attendance report error:', error);
     res.status(500).json({ message: 'Server error' });
