@@ -4,6 +4,12 @@ A full-stack enterprise employee management system covering attendance, leave, p
 
 **GitHub:** [github.com/itsaahsan/HRConnect](https://github.com/itsaahsan/HRConnect)
 
+## Live Demo
+
+- **App**: https://hrconnect-yte3.onrender.com
+
+> Hosted on Render's free tier — the first request after inactivity may take a few seconds to spin up.
+
 ---
 
 ## Tech Stack
