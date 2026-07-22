@@ -2,12 +2,13 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 let dbUrl = process.env.DATABASE_URL;
+// Clean up URL: remove channel_binding (Neon-specific, not supported by pg driver)
+// and remove sslmode (handled by dialectOptions)
 if (dbUrl) {
-  dbUrl = dbUrl.replace(/[?&]sslmode=[^&]*/g, '');
   dbUrl = dbUrl.replace(/[?&]channel_binding=[^&]*/g, '');
-  dbUrl = dbUrl.replace(/\?$/, '');
+  dbUrl = dbUrl.replace(/[?&]sslmode=[^&]*/g, '');
   dbUrl = dbUrl.replace(/&&/g, '&');
-  dbUrl = dbUrl.replace(/&$/, '');
+  dbUrl = dbUrl.replace(/[?&]$/, '');
   dbUrl = dbUrl.replace(/\?&/, '?');
 }
 
@@ -27,6 +28,9 @@ const sequelize = new Sequelize(dbUrl, {
       require: true,
       rejectUnauthorized: false
     } : false
+  },
+  retry: {
+    max: 3
   }
 });
 

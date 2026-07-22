@@ -29,9 +29,15 @@ app.get('/api/health', (req, res) => {
 
 // DB readiness
 let dbReady = false;
-app.get('/api/ready', (req, res) => {
+app.get('/api/ready', async (req, res) => {
   if (dbReady) return res.status(200).json({ ready: true });
-  res.status(503).json({ ready: false, message: 'Database not ready' });
+  try {
+    await sequelize.authenticate();
+    dbReady = true;
+    return res.status(200).json({ ready: true });
+  } catch (error) {
+    res.status(503).json({ ready: false, message: 'Database not ready' });
+  }
 });
 
 // Security
