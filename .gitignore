@@ -32,11 +32,12 @@ Thumbs.db
 # Coverage
 coverage/
 
-# Uploads (keep .gitkeep)
+# Uploads
 uploads/*
 !uploads/.gitkeep
 
+# Vercel
+.vercel
+
 # Test
 *.test.js
-.vercel
-.env*
